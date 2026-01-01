@@ -1,7 +1,6 @@
 package main
 
 import (
-	"html/template"
 	"regexp"
 )
 
@@ -22,44 +21,35 @@ type Config struct {
 
 // Document represents a parsed markdown document
 type Document struct {
-	Title       string
-	Path        string
-	Content     string
-	RelPath     string
-	DirName     string
-	SourceDir   string
-	SourceName  string
-	AbsPath     string
-	Overview    string
+	Title      string `json:"Title"`
+	Path       string `json:"-"`
+	Content    string `json:"-"`
+	RelPath    string `json:"RelPath"`
+	DirName    string `json:"DirName"`
+	SourceDir  string `json:"-"`
+	SourceName string `json:"SourceName"`
+	AbsPath    string `json:"AbsPath"`
+	Overview   string `json:"Overview"`
 }
 
 // DirectoryGroup represents a group of documents from the same directory
 type DirectoryGroup struct {
-	Name      string
-	Documents []Document
+	Name      string     `json:"Name"`
+	Documents []Document `json:"Documents"`
 }
 
 // App represents the main application
 type App struct {
-	Config         Config
-	Documents      []Document
-	IgnoreRegexes  []*regexp.Regexp
-	FileRegexes    map[string]*regexp.Regexp
-	WorkingDir     string
+	Config        Config
+	Documents     []Document
+	IgnoreRegexes []*regexp.Regexp
+	FileRegexes   map[string]*regexp.Regexp
+	WorkingDir    string
 }
 
-// IndexData represents data for the index template
+// IndexData represents data for the API index response
 type IndexData struct {
-	Title          string
-	Groups         []DirectoryGroup
-	TotalDocuments int
-}
-
-// DocumentData represents data for the document template
-type DocumentData struct {
-	Title    string
-	AppTitle string
-	DirName  string
-	AbsPath  string
-	Content  template.HTML
+	Title          string           `json:"Title"`
+	Groups         []DirectoryGroup `json:"Groups"`
+	TotalDocuments int              `json:"TotalDocuments"`
 }

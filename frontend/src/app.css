@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Custom scrollbar for dark mode */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Markdown content styling */
+.prose h1 {
+  @apply text-3xl font-bold mb-4 pb-2 border-b border-slate-200 dark:border-slate-700;
+}
+
+.prose h2 {
+  @apply text-2xl font-semibold mt-8 mb-4;
+}
+
+.prose h3 {
+  @apply text-xl font-semibold mt-6 mb-3;
+}
+
+.prose h4 {
+  @apply text-lg font-semibold mt-4 mb-2;
+}
+
+.prose p {
+  @apply mb-4 leading-relaxed;
+}
+
+.prose ul, .prose ol {
+  @apply mb-4 pl-6;
+}
+
+.prose ul {
+  @apply list-disc;
+}
+
+.prose ol {
+  @apply list-decimal;
+}
+
+.prose li {
+  @apply mb-1;
+}
+
+.prose a {
+  @apply text-blue-600 dark:text-blue-400 hover:underline;
+}
+
+.prose code {
+  @apply bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded text-sm font-mono;
+  @apply text-pink-600 dark:text-pink-400;
+  @apply border border-slate-300 dark:border-slate-600;
+}
+
+.prose pre {
+  @apply bg-slate-900 dark:bg-slate-950 text-slate-100 p-4 rounded-lg overflow-x-auto mb-4;
+  @apply border border-slate-700 dark:border-slate-700;
+  @apply shadow-lg;
+}
+
+.prose pre code {
+  @apply bg-transparent p-0 border-0 text-slate-100;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-blue-500 pl-4 italic text-slate-600 dark:text-slate-400 my-4;
+}
+
+.prose table {
+  @apply w-full border-collapse mb-4;
+}
+
+.prose th, .prose td {
+  @apply border border-slate-300 dark:border-slate-700 px-4 py-2 text-left;
+}
+
+.prose th {
+  @apply bg-slate-200 dark:bg-slate-800 font-semibold;
+}
+
+.prose tr:nth-child(even) {
+  @apply bg-slate-50 dark:bg-slate-800/50;
+}
+
+.prose img {
+  @apply max-w-full rounded-lg my-4;
+}
+
+.prose hr {
+  @apply border-slate-300 dark:border-slate-700 my-8;
+}

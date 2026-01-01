@@ -1,3 +1,7 @@
 dimandocs
 artifacts
 CLAUDE.md
+
+# Frontend
+frontend/node_modules
+frontend/dist

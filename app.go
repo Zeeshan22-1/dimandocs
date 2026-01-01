@@ -4,7 +4,7 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
-	"html/template"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -16,8 +16,8 @@ import (
 	"github.com/russross/blackfriday/v2"
 )
 
-//go:embed templates/*
-var templatesFS embed.FS
+//go:embed frontend/dist/*
+var frontendFS embed.FS
 
 // NewApp creates a new application instance
 func NewApp() *App {
@@ -213,20 +213,17 @@ func (a *App) GroupDocumentsByDirectory() []DirectoryGroup {
 
 // SetupRoutes sets up HTTP routes
 func (a *App) SetupRoutes() {
-	http.HandleFunc("/", a.handleIndex)
-	http.HandleFunc("/doc/", a.handleDocument)
+	// API routes
+	http.HandleFunc("/api/index", a.handleAPIIndex)
+	http.HandleFunc("/api/doc/", a.handleAPIDocument)
 	http.HandleFunc("/api/search", a.handleSearch)
-	http.HandleFunc("/static/", a.handleStatic)
+
+	// Static files and SPA fallback
+	http.HandleFunc("/", a.handleSPA)
 }
 
-// handleIndex handles the index page
-func (a *App) handleIndex(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFS(templatesFS, "templates/index.html")
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to parse template: %v", err), http.StatusInternalServerError)
-		return
-	}
-
+// handleAPIIndex returns index data as JSON
+func (a *App) handleAPIIndex(w http.ResponseWriter, r *http.Request) {
 	groups := a.GroupDocumentsByDirectory()
 
 	data := IndexData{
@@ -235,14 +232,15 @@ func (a *App) handleIndex(w http.ResponseWriter, r *http.Request) {
 		TotalDocuments: len(a.Documents),
 	}
 
-	if err := tmpl.Execute(w, data); err != nil {
-		http.Error(w, fmt.Sprintf("Failed to execute template: %v", err), http.StatusInternalServerError)
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		http.Error(w, fmt.Sprintf("Failed to encode response: %v", err), http.StatusInternalServerError)
 	}
 }
 
-// handleDocument handles individual document pages
-func (a *App) handleDocument(w http.ResponseWriter, r *http.Request) {
-	path := strings.TrimPrefix(r.URL.Path, "/doc/")
+// handleAPIDocument returns a single document as JSON with rendered HTML
+func (a *App) handleAPIDocument(w http.ResponseWriter, r *http.Request) {
+	path := strings.TrimPrefix(r.URL.Path, "/api/doc/")
 
 	var doc *Document
 	for _, d := range a.Documents {
@@ -257,24 +255,25 @@ func (a *App) handleDocument(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFS(templatesFS, "templates/document.html")
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to parse template: %v", err), http.StatusInternalServerError)
-		return
-	}
-
 	html := blackfriday.Run([]byte(doc.Content))
 
-	data := DocumentData{
+	data := struct {
+		Title    string `json:"Title"`
+		AppTitle string `json:"AppTitle"`
+		DirName  string `json:"DirName"`
+		AbsPath  string `json:"AbsPath"`
+		Content  string `json:"Content"`
+	}{
 		Title:    doc.Title,
 		AppTitle: a.Config.Title,
 		DirName:  doc.DirName,
 		AbsPath:  doc.AbsPath,
-		Content:  template.HTML(html),
+		Content:  string(html),
 	}
 
-	if err := tmpl.Execute(w, data); err != nil {
-		http.Error(w, fmt.Sprintf("Failed to execute template: %v", err), http.StatusInternalServerError)
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		http.Error(w, fmt.Sprintf("Failed to encode response: %v", err), http.StatusInternalServerError)
 	}
 }
 
@@ -304,9 +303,49 @@ func (a *App) handleSearch(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// handleStatic handles static file serving
-func (a *App) handleStatic(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, r.URL.Path[1:])
+// handleSPA serves the frontend SPA
+func (a *App) handleSPA(w http.ResponseWriter, r *http.Request) {
+	// Get the sub-filesystem for frontend/dist
+	distFS, err := fs.Sub(frontendFS, "frontend/dist")
+	if err != nil {
+		http.Error(w, "Failed to access frontend files", http.StatusInternalServerError)
+		return
+	}
+
+	// Try to serve the requested file
+	path := r.URL.Path
+	if path == "/" {
+		path = "/index.html"
+	}
+
+	// Remove leading slash for file lookup
+	filePath := strings.TrimPrefix(path, "/")
+
+	// Check if the file exists
+	file, err := distFS.Open(filePath)
+	if err == nil {
+		file.Close()
+		// File exists, serve it
+		http.FileServer(http.FS(distFS)).ServeHTTP(w, r)
+		return
+	}
+
+	// File doesn't exist, serve index.html for SPA routing
+	indexFile, err := distFS.Open("index.html")
+	if err != nil {
+		http.Error(w, "Frontend not found", http.StatusNotFound)
+		return
+	}
+	defer indexFile.Close()
+
+	content, err := ioutil.ReadAll(indexFile)
+	if err != nil {
+		http.Error(w, "Failed to read index.html", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/html")
+	w.Write(content)
 }
 
 // Start starts the HTTP server
